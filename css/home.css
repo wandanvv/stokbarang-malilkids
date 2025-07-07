@@ -1,0 +1,119 @@
+ body {
+    font-family: 'Poppins', sans-serif;
+    background: #f9f9f9;
+    color: #333;
+  }
+
+  .text-blue {
+    color: #0077b6 !important;
+    font-weight: 700;
+    font-size: 28px;
+  }
+
+  .text-orange {
+    color: #ff8800 !important;
+    font-weight: 700;
+    font-size: 28px;
+  }
+
+  .brand-logo {
+    font-size: 32px;
+  }
+
+  .navbar {
+    background-color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 119, 182, 0.1);
+  }
+
+  .nav-link {
+    color: #0077b6 !important;
+    margin: 0 10px;
+    transition: color 0.3s ease;
+  }
+
+  .nav-link:hover {
+    color: #ff8800 !important;
+  }
+
+  .quote_btn-container a {
+    background-color: #ff8800;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.3s;
+  }
+
+  .quote_btn-container a:hover {
+    background-color: #ff6600;
+    color: #fff;
+  }
+
+  .search-container {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .search-box .form-control {
+    border-radius: 25px 0 0 25px;
+    border: 2px solid #0077b6;
+  }
+
+  .search-box .btn-primary {
+    background-color: #0077b6;
+    border-color: #0077b6;
+    border-radius: 0 25px 25px 0;
+    font-weight: 600;
+  }
+
+  .search-box .btn-primary:hover {
+    background-color: #005f8a;
+    border-color: #005f8a;
+  }
+
+  .card {
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 12px rgba(0, 119, 182, 0.15);
+    border-radius: 15px;
+  }
+
+  .card-title {
+    color: #0077b6;
+    font-weight: bold;
+  }
+
+  .text-primary {
+    color: #ff8800 !important;
+  }
+
+  .footer_section {
+    background: #0077b6;
+    color: #fff;
+    text-align: center;
+    padding: 15px 0;
+    margin-top: 30px;
+  }
+
+  .footer_section a {
+    color: #ffdd99;
+  }
+
+  .alert-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+    border-radius: 10px;
+    padding: 15px;
+    font-weight: 500;
+  }
+
+  /* Optional efek hover hasil pencarian */
+  .search-item:hover {
+    background-color: #ffdd99;
+    color: #333;
+  }
