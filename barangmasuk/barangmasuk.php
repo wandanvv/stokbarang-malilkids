@@ -17,7 +17,6 @@ if(isset($_GET['term'])) {
         array_push($result, $data);
     }
     
-    // Return JSON and exit
     echo json_encode($result);
     exit();
 }
@@ -57,92 +56,62 @@ if(isset($_POST['addmasuk'])){
     }
 }
 
+// Edit Barang Masuk
 if(isset($_POST['updatebarangmasuk'])) {
     $idmasuk = $_POST['idmasuk'];
     $jumlah_baru = $_POST['jumlah'];
     $penerima = $_POST['penerima'];
     
-    if(empty($idmasuk) || empty($jumlah_baru) || empty($penerima)) {
-        echo "<script>alert('Semua field harus diisi!');</script>";
-    } else {
-        mysqli_begin_transaction($conn);
-        
-        try {
-            $data_lama = mysqli_query($conn, "SELECT idbarang, jumlah FROM masuk WHERE idmasuk='$idmasuk'");
-            
-            if(mysqli_num_rows($data_lama) == 0) {
-                throw new Exception('Data tidak ditemukan');
-            }
-            
-            $row = mysqli_fetch_assoc($data_lama);
-            $idbarang = $row['idbarang'];
-            $jumlah_lama = $row['jumlah'];
-            
-            // Hitung selisih
-            $selisih = $jumlah_baru - $jumlah_lama;
-            
-            $query = mysqli_query($conn, "UPDATE masuk SET jumlah='$jumlah_baru', penerima='$penerima' WHERE idmasuk='$idmasuk'");
+    // Ambil data lama untuk menghitung selisih
+    $data_lama = mysqli_query($conn, "SELECT idbarang, jumlah FROM masuk WHERE idmasuk='$idmasuk'");
+    $row = mysqli_fetch_assoc($data_lama);
+    $idbarang = $row['idbarang'];
+    $jumlah_lama = $row['jumlah'];
+    
+    // Hitung selisih
+    $selisih = $jumlah_baru - $jumlah_lama;
+    
+    // Update tabel masuk
+    $query = mysqli_query($conn, "UPDATE masuk SET jumlah='$jumlah_baru', penerima='$penerima' WHERE idmasuk='$idmasuk'");
 
-            if($query){
-                $updatestok = mysqli_query($conn, "UPDATE stok SET qty = qty + '$selisih' WHERE idbarang='$idbarang'");
-                
-                if($updatestok){
-                    mysqli_commit($conn);
-                    echo "<script>
-                        alert('Data berhasil diupdate!');
-                        window.location.href='barangmasuk.php';
-                    </script>";
-                    exit; 
-                } else {
-                    throw new Exception('Gagal update stok');
-                }
-            } else {
-                throw new Exception('Gagal update data masuk');
-            }
-        } catch (Exception $e) {
-            mysqli_rollback($conn);
-            echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
+    if($query){
+        // Update stok berdasarkan selisih
+        $updatestok = mysqli_query($conn, "UPDATE stok SET jumlah = jumlah + '$selisih' WHERE idbarang='$idbarang'");
+        
+        if($updatestok){
+            echo "<script>window.location.href='barangmasuk.php';</script>";
+        } else {
+            echo "<script>alert('Data masuk berhasil diupdate, tapi gagal update stok');</script>";
         }
+    } else {
+        echo "<script>alert('Gagal update data');</script>";
     }
 }
-// Hapus Barang Masuk (bonus - jika diperlukan)
-if(isset($_POST['deletebarangmasuk'])) {
-    $idmasuk = $_POST['idmasuk'];
+
+// Hapus Barang Masuk
+if(isset($_GET['hapusbarangmasuk'])){
+    $idmasuk = $_GET['hapusbarangmasuk'];
     
-    mysqli_begin_transaction($conn);
+    // Ambil data untuk mengembalikan stok
+    $data = mysqli_query($conn, "SELECT idbarang, jumlah FROM masuk WHERE idmasuk='$idmasuk'");
+    $row = mysqli_fetch_assoc($data);
+    $idbarang = $row['idbarang'];
+    $jumlah = $row['jumlah'];
     
-    try {
-        $data = mysqli_query($conn, "SELECT idbarang, jumlah FROM masuk WHERE idmasuk='$idmasuk'");
+    // Hapus dari tabel masuk
+    $hapus = mysqli_query($conn, "DELETE FROM masuk WHERE idmasuk='$idmasuk'");
+
+    if($hapus){
+        // Kurangi stok
+        $updatestok = mysqli_query($conn, "UPDATE stok SET jumlah = jumlah - '$jumlah' WHERE idbarang='$idbarang'");
         
-        if(mysqli_num_rows($data) == 0) {
-            throw new Exception('Data tidak ditemukan');
-        }
-        
-        $row = mysqli_fetch_assoc($data);
-        $idbarang = $row['idbarang'];
-        $jumlah = $row['jumlah'];
-        
-        $delete = mysqli_query($conn, "DELETE FROM masuk WHERE idmasuk='$idmasuk'");
-        
-        if($delete) {
-            $updatestok = mysqli_query($conn, "UPDATE stok SET qty = qty - '$jumlah' WHERE idbarang='$idbarang'");
-            
-            if($updatestok) {
-                mysqli_commit($conn);
-                echo "<script>
-                    alert('Data berhasil dihapus!');
-                    window.location.href='barangmasuk.php';
-                </script>";
-                exit;
-            } else {
-                throw new Exception('Gagal update stok');
-            }
+        if($updatestok){
+            echo "<script>window.location.href='barangmasuk.php';</script>";
         } else {
-            throw new Exception('Gagal menghapus data');
+            echo "<script>alert('Data masuk berhasil dihapus, tapi gagal update stok');</script>";
         }
-    } catch (Exception $e) {
-        mysqli_rollback($conn);
-        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
+    } else {
+        echo "<script>alert('Gagal hapus data');</script>";
     }
 }
 ?>
