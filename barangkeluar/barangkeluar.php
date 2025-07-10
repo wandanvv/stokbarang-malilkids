@@ -58,7 +58,7 @@ if(isset($_POST['addkeluar'])){
                         alert('Data berhasil ditambahkan!');
                         window.location.href='barangkeluar.php';
                     </script>";
-                    exit; // Penting untuk menghentikan eksekusi script 
+                    exit; 
                 } else {
                     throw new Exception('Gagal update stok');
                 }
@@ -66,7 +66,6 @@ if(isset($_POST['addkeluar'])){
                 throw new Exception('Gagal menambah data keluar');
             }
         } catch (Exception $e) {
-            // Rollback transaction jika ada error
             mysqli_rollback($conn);
             echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
         }
