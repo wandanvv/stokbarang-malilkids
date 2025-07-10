@@ -23,18 +23,53 @@ if(isset($_GET['term'])) {
     exit();
 }
 
-// Tambah Barang Keluar
 if(isset($_POST['addkeluar'])){
     $namabarang = $_POST['namabarang'];
     $jumlah = $_POST['jumlah'];
     $keterangan = $_POST['keterangan'];
 
-    $addkeluar = mysqli_query($conn, "INSERT INTO keluar (idbarang, jumlah, keterangan) VALUES ('$namabarang', '$jumlah', '$keterangan')");
-    
-    if($addkeluar){
-        echo "<script>window.location.href='barangkeluar.php';</script>";
+    if(empty($namabarang) || empty($jumlah) || empty($keterangan)) {
+        echo "<script>alert('Semua field harus diisi!');</script>";
     } else {
-        echo "<script>alert('Gagal menambah data keluar');</script>";
+        mysqli_begin_transaction($conn);
+        
+        try {
+            $cek_stok = mysqli_query($conn, "SELECT qty FROM stok WHERE idbarang='$namabarang'");
+            
+            if(mysqli_num_rows($cek_stok) == 0) {
+                throw new Exception('Barang tidak ditemukan dalam stok');
+            }
+            
+            $row_stok = mysqli_fetch_assoc($cek_stok);
+            $stok_tersedia = $row_stok['qty'];
+            
+            if($stok_tersedia < $jumlah) {
+                throw new Exception('Stok tidak mencukupi! Stok tersedia: ' . $stok_tersedia);
+            }
+            
+            $addkeluar = mysqli_query($conn, "INSERT INTO keluar (idbarang, jumlah, keterangan) VALUES ('$namabarang', '$jumlah', '$keterangan')");
+            
+            if($addkeluar){
+                $updatestok = mysqli_query($conn, "UPDATE stok SET qty = qty - '$jumlah' WHERE idbarang='$namabarang'");
+                
+                if($updatestok){
+                    mysqli_commit($conn);
+                    echo "<script>
+                        alert('Data berhasil ditambahkan!');
+                        window.location.href='barangkeluar.php';
+                    </script>";
+                    exit; // Penting untuk menghentikan eksekusi script 
+                } else {
+                    throw new Exception('Gagal update stok');
+                }
+            } else {
+                throw new Exception('Gagal menambah data keluar');
+            }
+        } catch (Exception $e) {
+            // Rollback transaction jika ada error
+            mysqli_rollback($conn);
+            echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
+        }
     }
 }
 
