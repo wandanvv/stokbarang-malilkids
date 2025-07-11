@@ -146,8 +146,8 @@ if(isset($_POST['idbarang'])){
   }
 
   .footer_section {
-    background: #0077b6;
-    color: #fff;
+    background: #ffffffff;
+    color: #000;
     text-align: center;
     padding: 15px 0;
     margin-top: 30px;
@@ -263,7 +263,7 @@ if(isset($_POST['idbarang'])){
     <div class="container">
       <p>
         &copy; <span id="displayYear"></span> All Rights Reserved
-        <a href="">2025</a>
+        <a href=""></a>
       </p>
     </div>
   </footer>
