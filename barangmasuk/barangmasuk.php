@@ -379,6 +379,9 @@ if(isset($_GET['hapusbarangmasuk'])){
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
           Tambah Data
         </button>
+        <a href="cetaklaporan_masuk.php" target="_blank" class="btn btn-success" style="margin-left: 10px;">
+          <i class="fa fa-print"></i> Cetak Laporan
+        </a>
       </div>
       <div class="card-body">
         <div class="table-responsive">
