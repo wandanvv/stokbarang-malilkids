@@ -26,9 +26,6 @@ if(isset($_POST['login'])){
         $email = mysqli_real_escape_string($conn, $email);
         $password = mysqli_real_escape_string($conn, $password);
         
-        // Debug: tampilkan input (hapus setelah selesai debug)
-        // echo "Email: '$email', Password: '$password'<br>";
-        
         // Query ke database - coba beberapa variasi
         $queries = [
             // Query normal
@@ -55,8 +52,6 @@ if(isset($_POST['login'])){
                 if($hitung > 0){
                     $login_success = true;
                     $user_data = mysqli_fetch_assoc($cekdb);
-                    // Debug: tampilkan query yang berhasil
-                    // echo "Query berhasil #" . ($index + 1) . ": " . $query . "<br>";
                     break;
                 }
             }
@@ -65,8 +60,9 @@ if(isset($_POST['login'])){
         if($login_success){
             // Login berhasil
             $_SESSION['log'] = 'True';
-            $_SESSION['user_id'] = $user_data['id'] ?? '';
+            $_SESSION['user_id'] = $user_data['iduser'] ?? '';
             $_SESSION['user_email'] = $user_data['email'] ?? '';
+            $_SESSION['username'] = $user_data['username'] ?? '';
             
             // Redirect ke home
             header('location:../home.php');

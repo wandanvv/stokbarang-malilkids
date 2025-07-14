@@ -45,216 +45,49 @@ $tanggal_cetak = strtr($tanggal_cetak, $bulan_indo);
     <title>Laporan Stock Barang - Malilkids</title>
     <link rel="stylesheet" href="../css/bootstrap.css" />
     <link href="https://fonts.googleapis.com/css?family=Poppins:400,600,700&display=swap" rel="stylesheet" />
-    
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: white;
-            color: #333;
-            margin: 0;
-            padding: 20px;
-        }
-        
-        .print-header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 3px solid #0077b6;
-            padding-bottom: 20px;
-        }
-        
-        .company-name {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-        
-        .text-blue { color: #0077b6 !important; }
-        .text-orange { color: #ff8800 !important; }
-        
-        .company-info {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 10px;
-        }
-        
-        .report-title {
-            font-size: 24px;
-            font-weight: 600;
-            color: #0077b6;
-            margin: 10px 0;
-        }
-        
-        .report-info {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px 0;
-            border-left: 4px solid #0077b6;
-        }
-        
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            margin: 5px 0;
-        }
-        
-        .info-label {
-            font-weight: 600;
-            color: #0077b6;
-        }
-        
-        .summary-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
-        }
-        
-        .summary-card {
-            background: linear-gradient(135deg, #0077b6, #005f8a);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-        }
-        
-        .summary-card.success {
-            background: linear-gradient(135deg, #28a745, #20c997);
-        }
-        
-        .summary-card h3 {
-            margin: 0 0 10px 0;
-            font-size: 14px;
-            opacity: 0.9;
-        }
-        
-        .summary-card .number {
-            font-size: 28px;
-            font-weight: 700;
-            margin: 0;
-        }
-        
-        .report-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            background: white;
-        }
-        
-        .report-table th {
-            background: #0077b6;
-            color: white;
-            padding: 12px 8px;
-            text-align: center;
-            font-weight: 600;
-            border: 1px solid #005f8a;
-        }
-        
-        .report-table td {
-            padding: 10px 8px;
-            text-align: center;
-            border: 1px solid #ddd;
-            vertical-align: middle;
-        }
-        
-        .report-table tbody tr:nth-child(even) {
-            background: #f8f9fa;
-        }
-        
-        .report-table tbody tr:hover {
-            background: #e9f5fc;
-        }
-        
-        .print-footer {
-            margin-top: 40px;
-            text-align: right;
-            font-size: 14px;
-        }
-        
-        .signature-area {
-            margin-top: 60px;
-            text-align: right;
-        }
-        
-        .signature-box {
-            display: inline-block;
-            text-align: center;
-            margin-left: 50px;
-        }
-        
-        .signature-line {
-            border-top: 1px solid #333;
-            width: 200px;
-            margin: 60px auto 10px auto;
-        }
-        
-        /* Print specific styles */
+        /* Print Styles */
         @media print {
-            body {
-                padding: 0;
-                margin: 0;
-            }
-            
-            .no-print {
-                display: none !important;
-            }
-            
-            .print-header {
-                break-inside: avoid;
-            }
-            
-            .summary-cards {
-                break-inside: avoid;
-            }
-            
-            .report-table {
-                break-inside: auto;
-            }
-            
-            .report-table thead {
-                display: table-header-group;
-            }
-            
-            .report-table tbody tr {
-                break-inside: avoid;
-            }
+            .no-print { display: none !important; }
+            body { font-family: 'Arial', sans-serif; }
+            .print-header { border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 20px; }
+            .report-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            .report-table th, .report-table td { border: 1px solid #333; padding: 8px; text-align: center; }
+            .report-table th { background-color: #f0f0f0; }
         }
         
-        .print-controls {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            background: white;
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
+        /* Screen Styles */
+        body { font-family: 'Poppins', sans-serif; margin: 20px; }
+        .print-controls { margin-bottom: 20px; }
+        .btn { padding: 8px 16px; margin-right: 10px; text-decoration: none; display: inline-block; border-radius: 4px; }
+        .btn-primary { background-color: #007bff; color: white; }
+        .btn-secondary { background-color: #6c757d; color: white; }
         
-        .btn {
-            padding: 8px 16px;
-            margin: 0 5px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-block;
-        }
+        .print-header { text-align: center; margin-bottom: 30px; }
+        .company-name { font-size: 28px; font-weight: bold; }
+        .text-blue { color: #007bff; }
+        .text-orange { color: #ff6b35; }
+        .company-info { font-size: 14px; color: #666; margin: 10px 0; }
+        .report-title { font-size: 18px; font-weight: bold; margin-top: 15px; }
         
-        .btn-primary {
-            background: #0077b6;
-            color: white;
-        }
+        .report-info { margin-bottom: 20px; }
+        .info-row { margin: 5px 0; }
+        .info-label { font-weight: bold; }
         
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-        }
+        .summary-cards { display: flex; gap: 20px; margin-bottom: 20px; }
+        .summary-card { flex: 1; padding: 15px; border: 1px solid #ddd; border-radius: 8px; text-align: center; }
+        .summary-card.success { background-color: #d4edda; border-color: #c3e6cb; }
+        .summary-card h3 { margin: 0 0 10px 0; font-size: 14px; }
+        .number { font-size: 24px; font-weight: bold; }
         
-        .btn:hover {
-            opacity: 0.9;
-        }
+        .report-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .report-table th, .report-table td { border: 1px solid #333; padding: 8px; text-align: center; }
+        .report-table th { background-color: #f8f9fa; font-weight: bold; }
+        
+        .print-footer { margin-top: 30px; }
+        .signature-area { margin-top: 50px; text-align: right; }
+        .signature-box { display: inline-block; text-align: center; min-width: 200px; }
+        .signature-line { border-top: 1px solid #333; margin: 50px 0 10px 0; }
     </style>
 </head>
 <body>
@@ -263,7 +96,7 @@ $tanggal_cetak = strtr($tanggal_cetak, $bulan_indo);
         <button onclick="window.print()" class="btn btn-primary">
             🖨️ Cetak Laporan
         </button>
-        <a href="stok.php" class="btn btn-secondary">
+        <a href="../stok.php" class="btn btn-secondary">
             ← Kembali
         </a>
     </div>
@@ -354,16 +187,8 @@ $tanggal_cetak = strtr($tanggal_cetak, $bulan_indo);
     </div>
 
     <script>
-        // Format tanggal Indonesia
-        function formatTanggal(date) {
-            const months = [
-                'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-            ];
-            
-            const d = new Date(date);
-            return d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
-        }
+        // Auto print when page loads (optional)
+        // window.onload = function() { window.print(); }
     </script>
 </body>
 </html>

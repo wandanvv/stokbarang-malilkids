@@ -322,26 +322,43 @@ $filter_kategori = isset($_GET['filter_kategori']) ? $_GET['filter_kategori'] : 
   </button>
   
   <!-- Tombol Cetak Laporan -->
-  <div class="btn-group" role="group" style="margin-left: 10px;">
-    <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-      <i class="fa fa-print"></i> Cetak Laporan
+<div class="btn-group" role="group" style="margin-left: 10px;">
+    <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="fa fa-print"></i> Cetak Laporan
     </button>
-    <div class="dropdown-menu">
-      <a class="dropdown-item" href="stok/cetaklaporan_stok.php" target="_blank">
-        <i class="fa fa-file-text"></i> Cetak Semua Data
-      </a>
-      <div class="dropdown-divider"></div>
-      <h6 class="dropdown-header">Cetak per Kategori:</h6>
-      <?php
-      $getkategori = mysqli_query($conn, "SELECT * FROM kategori ORDER BY namakategori ASC");
-      while($kategori = mysqli_fetch_array($getkategori)){
-        echo '<a class="dropdown-item" href="cetak_laporan.php?filter_kategori='.urlencode($kategori['namakategori']).'" target="_blank">
-                <i class="fa fa-filter"></i> '.$kategori['namakategori'].'
-              </a>';
-      }
-      ?>
-    </div>
-  </div>
+    <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="cetaklaporan_stok.php" target="_blank">
+            <i class="fa fa-file-text"></i> Cetak Semua Data
+        </a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><h6 class="dropdown-header">Cetak per Kategori:</h6></li>
+        <?php
+        $getkategori = mysqli_query($conn, "SELECT * FROM kategori ORDER BY namakategori ASC");
+        while($kategori = mysqli_fetch_array($getkategori)){
+            echo '<li><a class="dropdown-item" href="cetaklaporan_stok.php?filter_kategori='.urlencode($kategori['namakategori']).'" target="_blank">
+                    <i class="fa fa-filter"></i> '.$kategori['namakategori'].'
+                  </a></li>';
+        }
+        ?>
+    </ul>
+</div>
+
+<!-- <script>
+$(document).ready(function(){
+    // Manual dropdown toggle
+    $('.dropdown-toggle').click(function(e){
+        e.preventDefault();
+        $(this).next('.dropdown-menu').toggle();
+    });
+    
+    // Close dropdown when clicking outside
+    $(document).click(function(e) {
+        if (!$(e.target).closest('.btn-group').length) {
+            $('.dropdown-menu').hide();
+        }
+    });
+});
+</script> -->
 
   <!-- Filter kategori (existing code) -->
   <form method="get" class="form-inline mt-3">
@@ -575,6 +592,9 @@ $filter_kategori = isset($_GET['filter_kategori']) ? $_GET['filter_kategori'] : 
   </div>
 
   <!-- jQuery, Bootstrap, and DataTables scripts -->
+   <!-- Pastikan jQuery dan Bootstrap JS sudah dimuat -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../js/jquery-3.4.1.min.js"></script>
   <script src="../js/bootstrap.js"></script>
   <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
