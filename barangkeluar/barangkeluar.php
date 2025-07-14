@@ -561,10 +561,8 @@ if(isset($_GET['hapuskeluar'])){
                 "order": [[ 1, "desc" ]] // Urutkan berdasarkan tanggal terbaru
             });
 
-            // Update Tahun Otomatis
             document.getElementById("displayYear").innerHTML = new Date().getFullYear();
 
-            // Autocomplete Nama Barang
             $("#namabarang_search").autocomplete({
                 source: 'barangkeluar.php',
                 minLength: 2,
@@ -575,7 +573,6 @@ if(isset($_GET['hapuskeluar'])){
                     return false;
                 }
             }).autocomplete("instance")._renderItem = function(ul, item) {
-                // Custom rendering for dropdown items
                 return $("<li>")
                     .append("<div>" + item.label + "</div>")
                     .appendTo(ul);
