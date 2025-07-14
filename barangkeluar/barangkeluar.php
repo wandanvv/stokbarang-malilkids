@@ -376,6 +376,9 @@ if(isset($_GET['hapuskeluar'])){
                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
                         Tambah Data
                     </button>
+                    <a href="cetaklaporan_keluar.php" target="_blank" class="btn btn-success" style="margin-left: 10px;">
+                        <i class="fa fa-print"></i> Cetak Laporan
+                    </a>
                     <!-- Filter kategori -->
       <form method="get" class="form-inline mt-3">
         <select name="filter_kategori" class="form-control mr-2">
