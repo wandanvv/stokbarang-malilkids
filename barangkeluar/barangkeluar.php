@@ -73,7 +73,6 @@ if(isset($_POST['addkeluar'])){
         }
     }
 }
-
 // Edit Barang Keluar
 if(isset($_POST['updatebarangkeluar'])){
     $idkeluar = $_POST['idkeluar'];
@@ -92,12 +91,10 @@ if(isset($_POST['updatebarangkeluar'])){
         // Hitung selisih
         $selisih = $jumlah_baru - $jumlah_lama;
         
-        // Update tabel keluar
         $query = mysqli_query($conn, "UPDATE keluar SET jumlah='$jumlah_baru', keterangan='$keterangan' WHERE idkeluar='$idkeluar'");
 
         if($query){
-            // Update stok berdasarkan selisih (untuk keluar, kita kurangi stok)
-            $updatestok = mysqli_query($conn, "UPDATE stok SET qty = qty - '$selisih' WHERE idbarang='$idbarang'");
+            $updatestok = mysqli_query($conn, "UPDATE stok SET stok = stok - '$selisih' WHERE idbarang='$idbarang'");
             
             if($updatestok){
                 mysqli_commit($conn);
