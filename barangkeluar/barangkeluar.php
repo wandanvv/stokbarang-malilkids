@@ -27,6 +27,7 @@ if(isset($_POST['addkeluar'])){
     $namabarang = $_POST['namabarang'];
     $jumlah = $_POST['jumlah'];
     $keterangan = $_POST['keterangan'];
+    $tanggal = date('Y-m-d H:i:s'); // Auto set tanggal sekarang
 
     if(empty($namabarang) || empty($jumlah) || empty($keterangan)) {
         echo "<script>alert('Semua field harus diisi!');</script>";
@@ -47,7 +48,8 @@ if(isset($_POST['addkeluar'])){
                 throw new Exception('Stok tidak mencukupi! Stok tersedia: ' . $stok_tersedia);
             }
             
-            $addkeluar = mysqli_query($conn, "INSERT INTO keluar (idbarang, jumlah, keterangan) VALUES ('$namabarang', '$jumlah', '$keterangan')");
+            // Tambahkan tanggal ke INSERT query
+            $addkeluar = mysqli_query($conn, "INSERT INTO keluar (idbarang, jumlah, keterangan, tanggal) VALUES ('$namabarang', '$jumlah', '$keterangan', '$tanggal')");
             
             if($addkeluar){
                 $updatestok = mysqli_query($conn, "UPDATE stok SET qty = qty - '$jumlah' WHERE idbarang='$namabarang'");
@@ -75,27 +77,83 @@ if(isset($_POST['addkeluar'])){
 // Edit Barang Keluar
 if(isset($_POST['updatebarangkeluar'])){
     $idkeluar = $_POST['idkeluar'];
-    $jumlah = $_POST['jumlah'];
+    $jumlah_baru = $_POST['jumlah'];
     $keterangan = $_POST['keterangan'];
+    
+    mysqli_begin_transaction($conn);
+    
+    try {
+        // Ambil data lama untuk menghitung selisih
+        $data_lama = mysqli_query($conn, "SELECT idbarang, jumlah FROM keluar WHERE idkeluar='$idkeluar'");
+        $row = mysqli_fetch_assoc($data_lama);
+        $idbarang = $row['idbarang'];
+        $jumlah_lama = $row['jumlah'];
+        
+        // Hitung selisih
+        $selisih = $jumlah_baru - $jumlah_lama;
+        
+        // Update tabel keluar
+        $query = mysqli_query($conn, "UPDATE keluar SET jumlah='$jumlah_baru', keterangan='$keterangan' WHERE idkeluar='$idkeluar'");
 
-    $query = mysqli_query($conn, "UPDATE keluar SET jumlah='$jumlah', keterangan='$keterangan' WHERE idkeluar='$idkeluar'");
-
-    if($query){
-        echo "<script>window.location.href='barangkeluar.php';</script>";
-    } else {
-        echo "<script>alert('Gagal update data keluar');</script>";
+        if($query){
+            // Update stok berdasarkan selisih (untuk keluar, kita kurangi stok)
+            $updatestok = mysqli_query($conn, "UPDATE stok SET qty = qty - '$selisih' WHERE idbarang='$idbarang'");
+            
+            if($updatestok){
+                mysqli_commit($conn);
+                echo "<script>
+                    alert('Data berhasil diupdate!');
+                    window.location.href='barangkeluar.php';
+                </script>";
+                exit;
+            } else {
+                throw new Exception('Gagal update stok');
+            }
+        } else {
+            throw new Exception('Gagal update data keluar');
+        }
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
     }
 }
 
 // Hapus Barang Keluar
 if(isset($_GET['hapuskeluar'])){
     $idkeluar = $_GET['hapuskeluar'];
-    $hapus = mysqli_query($conn, "DELETE FROM keluar WHERE idkeluar='$idkeluar'");
+    
+    mysqli_begin_transaction($conn);
+    
+    try {
+        // Ambil data untuk mengembalikan stok
+        $data = mysqli_query($conn, "SELECT idbarang, jumlah FROM keluar WHERE idkeluar='$idkeluar'");
+        $row = mysqli_fetch_assoc($data);
+        $idbarang = $row['idbarang'];
+        $jumlah = $row['jumlah'];
+        
+        // Hapus dari tabel keluar
+        $hapus = mysqli_query($conn, "DELETE FROM keluar WHERE idkeluar='$idkeluar'");
 
-    if($hapus){
-        echo "<script>window.location.href='barangkeluar.php';</script>";
-    } else {
-        echo "<script>alert('Gagal hapus data keluar');</script>";
+        if($hapus){
+            // Kembalikan stok (tambahkan kembali)
+            $updatestok = mysqli_query($conn, "UPDATE stok SET qty = qty + '$jumlah' WHERE idbarang='$idbarang'");
+            
+            if($updatestok){
+                mysqli_commit($conn);
+                echo "<script>
+                    alert('Data berhasil dihapus!');
+                    window.location.href='barangkeluar.php';
+                </script>";
+                exit;
+            } else {
+                throw new Exception('Gagal update stok');
+            }
+        } else {
+            throw new Exception('Gagal hapus data');
+        }
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
     }
 }
 ?>
@@ -342,6 +400,7 @@ if(isset($_GET['hapuskeluar'])){
                             <thead class="thead-dark">
                                 <tr>
                                     <th>No</th>
+                                    <th>Tanggal</th>
                                     <th>Nama Barang</th>
                                     <th>Jumlah</th>
                                     <th>Keterangan</th>
@@ -350,18 +409,25 @@ if(isset($_GET['hapuskeluar'])){
                             </thead>
                             <tbody>
                                 <?php
-                                $ambildatastok = mysqli_query($conn, "SELECT k.idkeluar, s.namabarang, k.jumlah, k.keterangan 
+                                // Tambahkan field tanggal ke query dan urutkan berdasarkan tanggal terbaru
+                                $ambildatastok = mysqli_query($conn, "SELECT k.idkeluar, k.tanggal, s.namabarang, k.jumlah, k.keterangan 
                                                                       FROM keluar k 
-                                                                      JOIN stok s ON k.idbarang = s.idbarang");
+                                                                      JOIN stok s ON k.idbarang = s.idbarang 
+                                                                      ORDER BY k.tanggal DESC");
                                 $i = 1;
                                 while($data=mysqli_fetch_array($ambildatastok)){
                                     $idk = $data['idkeluar'];
+                                    $tanggal = $data['tanggal'];
                                     $namabarang = $data['namabarang'];
                                     $jumlah = $data['jumlah'];
                                     $keterangan = $data['keterangan'];
+                                    
+                                    // Format tanggal untuk tampilan
+                                    $tanggal_formatted = date('d/m/Y H:i', strtotime($tanggal));
                                 ?>
                                 <tr>
                                     <td><?=$i++;?></td>
+                                    <td><?=$tanggal_formatted;?></td>
                                     <td><?=$namabarang;?></td>
                                     <td><?=$jumlah;?></td>
                                     <td><?=$keterangan;?></td>
@@ -382,6 +448,10 @@ if(isset($_GET['hapuskeluar'])){
                                                 </div>
                                                 <div class="modal-body">
                                                     <input type="hidden" name="idkeluar" value="<?=$idk;?>">
+                                                    <div class="form-group">
+                                                        <label>Tanggal</label>
+                                                        <input type="text" class="form-control" value="<?=$tanggal_formatted;?>" readonly>
+                                                    </div>
                                                     <div class="form-group">
                                                         <label>Nama Barang</label>
                                                         <input type="text" class="form-control" value="<?=$namabarang;?>" readonly>
@@ -447,6 +517,8 @@ if(isset($_GET['hapuskeluar'])){
                                 <label for="keterangan">Keterangan:</label>
                                 <input type="text" name="keterangan" id="keterangan" placeholder="Keterangan" class="form-control" required>
                             </div>
+                            
+                            <small class="form-text text-muted">Tanggal akan diisi otomatis saat data disimpan</small>
                         </div>
 
                         <!-- Modal Footer -->
@@ -485,7 +557,8 @@ if(isset($_GET['hapuskeluar'])){
             // Initialize DataTable
             $('#datatablesSimple').DataTable({
                 "lengthChange": false,
-                "searching": true
+                "searching": true,
+                "order": [[ 1, "desc" ]] // Urutkan berdasarkan tanggal terbaru
             });
 
             // Update Tahun Otomatis

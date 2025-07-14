@@ -241,6 +241,35 @@ $filter_kategori = isset($_GET['filter_kategori']) ? $_GET['filter_kategori'] : 
     color: #333;
     opacity: 0.8;
   }
+  .dropdown-menu {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.dropdown-header {
+  font-weight: 600;
+  color: #0077b6;
+  font-size: 12px;
+}
+
+.dropdown-item {
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+.dropdown-item:hover {
+  background-color: #e9f5fc;
+  color: #0077b6;
+}
+
+.dropdown-item i {
+  margin-right: 8px;
+  width: 16px;
+}
+
+.btn-group .dropdown-toggle::after {
+  margin-left: 8px;
+}
 </style>
 
 </head>
@@ -286,29 +315,52 @@ $filter_kategori = isset($_GET['filter_kategori']) ? $_GET['filter_kategori'] : 
   <div class="content container mt-4">
   <h2 class="mb-4">Stock Barang</h2>
 
-  <div class="card">
-    <div class="card-header">
-      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
-          Tambah Stok
-      </button>
-      <!-- Filter kategori -->
-      <form method="get" class="form-inline mt-3">
-        <select name="filter_kategori" class="form-control mr-2">
-          <option value="">Semua Kategori</option>
-          <?php
-          $getkategori = mysqli_query($conn, "SELECT * FROM kategori");
-          while($kategori = mysqli_fetch_array($getkategori)){
-            $selected = ($filter_kategori == $kategori['namakategori']) ? 'selected' : '';
-            echo "<option value='".$kategori['namakategori']."' $selected>".$kategori['namakategori']."</option>";
-          }
-          ?>
-        </select>
-        <button type="submit" class="btn btn-success">Filter</button>
-        <?php if($filter_kategori) { ?>
-          <a href="stok.php" class="btn btn-secondary ml-2">Reset</a>
-        <?php } ?>
-      </form>
+ <!-- Tambahkan kode ini di bagian card-header, setelah tombol "Tambah Stok" -->
+<div class="card-header">
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+      Tambah Stok
+  </button>
+  
+  <!-- Tombol Cetak Laporan -->
+  <div class="btn-group" role="group" style="margin-left: 10px;">
+    <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <i class="fa fa-print"></i> Cetak Laporan
+    </button>
+    <div class="dropdown-menu">
+      <a class="dropdown-item" href="stok/cetaklaporan_stok.php" target="_blank">
+        <i class="fa fa-file-text"></i> Cetak Semua Data
+      </a>
+      <div class="dropdown-divider"></div>
+      <h6 class="dropdown-header">Cetak per Kategori:</h6>
+      <?php
+      $getkategori = mysqli_query($conn, "SELECT * FROM kategori ORDER BY namakategori ASC");
+      while($kategori = mysqli_fetch_array($getkategori)){
+        echo '<a class="dropdown-item" href="cetak_laporan.php?filter_kategori='.urlencode($kategori['namakategori']).'" target="_blank">
+                <i class="fa fa-filter"></i> '.$kategori['namakategori'].'
+              </a>';
+      }
+      ?>
     </div>
+  </div>
+
+  <!-- Filter kategori (existing code) -->
+  <form method="get" class="form-inline mt-3">
+    <select name="filter_kategori" class="form-control mr-2">
+      <option value="">Semua Kategori</option>
+      <?php
+      $getkategori = mysqli_query($conn, "SELECT * FROM kategori");
+      while($kategori = mysqli_fetch_array($getkategori)){
+        $selected = ($filter_kategori == $kategori['namakategori']) ? 'selected' : '';
+        echo "<option value='".$kategori['namakategori']."' $selected>".$kategori['namakategori']."</option>";
+      }
+      ?>
+    </select>
+    <button type="submit" class="btn btn-success">Filter</button>
+    <?php if($filter_kategori) { ?>
+      <a href="stok.php" class="btn btn-secondary ml-2">Reset</a>
+    <?php } ?>
+  </form>
+</div>
 
   <div class="card-body">
   <div class="table-responsive">
