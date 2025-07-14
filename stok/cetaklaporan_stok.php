@@ -96,7 +96,7 @@ $tanggal_cetak = strtr($tanggal_cetak, $bulan_indo);
         <button onclick="window.print()" class="btn btn-primary">
             🖨️ Cetak Laporan
         </button>
-        <a href="../stok.php" class="btn btn-secondary">
+        <a href="stok.php" class="btn btn-secondary">
             ← Kembali
         </a>
     </div>
