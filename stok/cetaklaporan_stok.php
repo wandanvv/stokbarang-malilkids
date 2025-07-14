@@ -124,7 +124,7 @@ $tanggal_cetak = strtr($tanggal_cetak, $bulan_indo);
         </div>
         <div class="info-row">
             <span class="info-label">Dicetak Oleh:</span>
-            <span><?php echo $_SESSION['username']; ?></span>
+            <span><?php echo isset($_SESSION['username']) ? $_SESSION['username'] : 'User'; ?></span>
         </div>
     </div>
 
@@ -182,7 +182,7 @@ $tanggal_cetak = strtr($tanggal_cetak, $bulan_indo);
             <div>Bandung, <?php echo date('d F Y'); ?></div>
             <div style="margin-top: 10px;">Penanggung Jawab</div>
             <div class="signature-line"></div>
-            <div>(<?php echo $_SESSION['username']; ?>)</div>
+            <div>(<?php echo isset($_SESSION['username']) ? $_SESSION['username'] : 'User'; ?>)</div>
         </div>
     </div>
 
